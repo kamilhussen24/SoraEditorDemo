@@ -1,10 +1,11 @@
-name: Build & Release APK (Manual Supported)
+name: Manual Build & Release APK
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:  # ✅ Manual trigger support
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. v1.0.0)'
+        required: true
 
 jobs:
   build:
@@ -23,12 +24,21 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
 
-    - name: Build Debug APK
+    - name: Build APK
       run: ./gradlew assembleDebug
 
-    - name: Release to GitHub Releases
+    - name: Create Tag
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag ${{ github.event.inputs.version }}
+        git push origin ${{ github.event.inputs.version }}
+
+    - name: Release APK
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ github.event.inputs.version }}
+        name: Release ${{ github.event.inputs.version }}
         files: app/build/outputs/apk/debug/app-debug.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
