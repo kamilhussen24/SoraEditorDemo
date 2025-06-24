@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.soraeditordemo'
+    namespace 'com.example.soraeditorrelease'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.soraeditordemo"
+        applicationId "com.example.soraeditorrelease"
         minSdk 21
         targetSdk 34
         versionCode 1

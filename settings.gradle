@@ -1,2 +1,2 @@
-rootProject.name = "SoraEditorDemo"
+rootProject.name = "SoraEditorReleaseReady"
 include ':app'

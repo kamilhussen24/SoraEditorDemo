@@ -1,13 +1,16 @@
-name: Build Android APK
+name: Manual Build & Release APK
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. v1.0.0)'
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
@@ -18,14 +21,24 @@ jobs:
         distribution: 'temurin'
         java-version: 17
 
-    - name: Grant execute permission to gradlew
+    - name: Make gradlew executable
       run: chmod +x ./gradlew
 
     - name: Build APK
       run: ./gradlew assembleDebug
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
+    - name: Create Tag
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag ${{ github.event.inputs.version }}
+        git push origin ${{ github.event.inputs.version }}
+
+    - name: Release APK
+      uses: softprops/action-gh-release@v2
       with:
-        name: SoraEditorDemo-APK
-        path: app/build/outputs/apk/debug/app-debug.apk
+        tag_name: ${{ github.event.inputs.version }}
+        name: Release ${{ github.event.inputs.version }}
+        files: app/build/outputs/apk/debug/app-debug.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

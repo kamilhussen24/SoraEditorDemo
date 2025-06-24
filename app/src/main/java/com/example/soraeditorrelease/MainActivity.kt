@@ -1,4 +1,4 @@
-package com.example.soraeditordemo
+package com.example.soraeditorrelease
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
